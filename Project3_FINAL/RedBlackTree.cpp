@@ -115,7 +115,6 @@ RedBlackTree::RedBlackTree(Wine::Properties _compBy) : root(nullptr)
 	}
 }
 
-
 void RedBlackTree::recursiveDestructor(RBNode* node)
 {
 	if (node != nullptr) {
@@ -138,7 +137,7 @@ RedBlackTree::~RedBlackTree() {
 void RedBlackTree::insert(Wine* w)
 {
 	RBNode* parent = nullptr;
-	RBNode** current = &root; //uses double pointer to keep track of current pointer location
+	RBNode** current = &root; // Uses double pointer to keep track of current pointer location.
 	while (*current != nullptr) {
 		parent = *current;
 		if (nodeCompare((*current)->data, w) < 0) {

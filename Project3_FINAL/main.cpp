@@ -8,14 +8,14 @@
 
 using namespace std;
 
-vector<Wine*> wineCellar;
-void readWineCSV();
-tuple <Wine::Properties, bool, bool > getUserSpecifications();
+vector<Wine*> wineCellar; // Global vector that holds pointers to dynaimically allocated wine data.
+void readWineCSV(); // Reads wine data into wineCellar vector.
+tuple <Wine::Properties, bool, bool > getUserSpecifications(); // Gets user input and returns specification for preformSearch function.
 void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications);
 void printResults(vector<Wine*> RBTreeResults);
-void deleteWines();
-void loadbar(float percentage);
-bool yesOrNoReq(string outputReq);
+void deleteWines(); // Deallocates pointers stored in wineCellar and clear out wine cellar.
+void loadbar(float percentage); // Used to show progress in Red-Black Tree and Hash Table construction.
+bool yesOrNoReq(string outputReq); // Get user response for (y/n) questions.
 
 void readWineCSV() {
     if (!wineCellar.empty()) deleteWines();
@@ -48,11 +48,11 @@ void readWineCSV() {
 
 tuple<Wine::Properties, bool, bool> getUserSpecifications() {
     int input = 0;
-    // keeps track of what info is being asked of the user. 
+    // Keeps track of what info is being asked of the user. 
     bool gettingSearch = true;
     bool gettingDataStruct = false;
 
-    // variables to be returned
+    // User specification variables to be returned.
     Wine::Properties searchBy = Wine::Properties::NONE;
     bool useRBTree = false;
     bool useHashTable = false;
@@ -155,9 +155,11 @@ tuple<Wine::Properties, bool, bool> getUserSpecifications() {
             }
         }
     }
-    return make_tuple(searchBy, useRBTree, useHashTable);
+    // Returned tuple is read by perform search function.
+    return make_tuple(searchBy, useRBTree, useHashTable);  .
 }
 
+// Receives inputs from getUserSpecification function.
 void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
     Wine::Properties searchBy;
     bool useRBTree;
@@ -184,11 +186,15 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
     getline(cin, searchKey);
     cout << endl;
 
+    // Used to store construction and search times for each data structure. 
     chrono::milliseconds RBTConstructTime, HTConstructTime;
     chrono::microseconds RBTSearchTime, HTSearchTime;
+
+    // Used to store search results for each data structure. 
     vector<Wine*> RBTSearchResults, HTSearchResults;
 
     if (useRBTree) {
+        // RBTree construction:
         auto RBTConstructStart = chrono::high_resolution_clock::now();
         cout << "Constructing Red Black Tree (" << wineCellar.size() << " elements):" << endl;
         RedBlackTree rbTree(searchBy);
@@ -202,6 +208,7 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
         RBTConstructTime = chrono::duration_cast<chrono::milliseconds> (RBTConstructStop - RBTConstructStart);
         cout << endl;
 
+        // RBTree search:
         auto RBTSearhStart = chrono::high_resolution_clock::now();
         cout << "Searching Red Black Tree now for \"" << searchKey << "\"... ";
         Wine wineSearchKey;
@@ -214,6 +221,7 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
     }
 
     if (useHashTable) {
+        // HashTable Construction:
         auto HTConstructStart = chrono::high_resolution_clock::now();
         HashTable hashTable(searchBy);
         cout << "Constructing Hash Table (" << wineCellar.size() << " elements):" << endl;
@@ -227,6 +235,7 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
         HTConstructTime = chrono::duration_cast<chrono::milliseconds> (HTConstructStop - HTConstructStart);
         cout << endl;
 
+        // HashTable Search:
         auto HTSearchStart = chrono::high_resolution_clock::now();
         cout << "Searching Hash Table now for \"" << searchKey << "\"... ";
         hashTable.search(searchKey, HTSearchResults);
@@ -235,6 +244,8 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
         HTSearchTime = chrono::duration_cast<chrono::microseconds> (HTSearchStop - HTSearchStart);
         cout << endl;
     }
+
+    // Displays the construction and search times.
     if (useRBTree) {
         cout << "Red-Black Tree Results" << endl;
         cout << setw(21) << "Construction time: " << RBTConstructTime.count() << " ms." << endl;
@@ -249,6 +260,8 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
         cout << "\tFound " << HTSearchResults.size() << " matches!" << endl;
         cout << endl;
     }
+
+    // Prompt to print results.
     if (!RBTSearchResults.empty()) {
         if (yesOrNoReq("Print out results? (y/n) "))
             printResults(RBTSearchResults);
@@ -259,9 +272,9 @@ void preformSearch(tuple<Wine::Properties, bool, bool> userSpecifications) {
     }
 }
 
+// Iterates through results based on number selection.
 void printResults(vector<Wine*> results)
 {
-    if (results.empty()) return;
     int numPrinted[] = { 10, 25, 50, 100 };
     int input = 0;
     int size = results.size();
@@ -349,7 +362,8 @@ void printResults(vector<Wine*> results)
     }
 
     Wine::sortWine(results, sortBy);
-    //find width of each column in table to be printed
+
+    // Finds width of each column in table to be printed.
     int maxTitleWid = 6;
     int maxProvCountryWid = 18;
     int maxVarietyWid = 8;
@@ -364,7 +378,7 @@ void printResults(vector<Wine*> results)
         if (varietyWid > maxVarietyWid)
             maxVarietyWid = varietyWid;
     }
-
+    // Prints table for results.
     cout << left << setw(maxTitleWid + 6) << "     Title" << "| " <<
         setw(maxProvCountryWid + 3) << "Province, Country" << "| " <<
         setw(maxVarietyWid + 1) << "Variety" << "| " <<
@@ -435,7 +449,7 @@ int main() {
         preformSearch(getUserSpecifications());
         if (yesOrNoReq("Do you want to perform another search? (y/n) ")) {
             if (yesOrNoReq("Do you want to clear the console of past results? (y/n) "))
-                cout << "\x1b[2J\x1b[H";
+                cout << "\x1b[2J\x1b[H"; // Clears console and returns cursor back to home position.
             else
                 cout << endl;
         }

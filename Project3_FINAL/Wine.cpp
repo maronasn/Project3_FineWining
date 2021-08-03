@@ -1,6 +1,6 @@
 #include "Wine.h"
 
-
+// Constructors for wine:
 Wine::Wine() : title(string()), country(string()), province(string()), variety(string()), rating(0), price(0) { }
 Wine::Wine(string _name, string _country, string _province, string _variety, char _rating, int _price) :
     title(_name), country(_country), province(_province), variety(_variety), rating(_rating), price(_price) {}
@@ -44,12 +44,9 @@ int Wine::getRating() const {
     return rating;
 }
 
-
-
 int Wine::getPrice() const {
     return price;
 }
-
 
 void Wine::setTitle(string _title)
 {

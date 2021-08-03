@@ -2,8 +2,9 @@
 
 HashTable::HashTable(Wine::Properties _hashBy)
 {
-	hashBy = _hashBy; //create hashtable with appropriate table size
+	hashBy = _hashBy;
 
+	// Creates hashtable with appropriate table size.
 	switch (hashBy) {
 	case Wine::Properties::VARIETY:
 		getHashedValue = &Wine::getVariety;
@@ -65,9 +66,10 @@ HashTable::~HashTable()
 	}
 }
 
+// Uses the djb2 hash function algorithm.
 int HashTable::hashFunction(string key)
 {
-	//Removes spaces from string to prevent overflow. 
+	// Limits size of string to ensure constant time complexity 
 	if (key.size() > 30)
 		key.resize(30);
 
@@ -85,11 +87,11 @@ int HashTable::hashFunction(string key)
 
 void HashTable::insert(Wine* data)
 {
-	//Converts key to index.
+	// Converts key to index.
 	string valueToBeHashed = (data->*getHashedValue)();
 	unsigned int index = hashFunction(valueToBeHashed);
 
-	//find open address for newNode
+	// Finds open address for newNode.
 	for (; hashTable[index] != nullptr; index = (index + 1) % tableSize) {
 		if ((hashTable[index]->data->*getHashedValue)() == valueToBeHashed)
 			break;
@@ -100,7 +102,7 @@ void HashTable::insert(Wine* data)
 
 void HashTable::search(string searchKey, vector<Wine*>& results)
 {
-	//Converts into the appropriate index it'll be located at.
+	// Converts into the appropriate index it'll be located at.
 	unsigned int index = hashFunction(searchKey);
 
 	for (; hashTable[index] != nullptr; index = (index + 1) % tableSize) {
